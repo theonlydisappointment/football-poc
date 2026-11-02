@@ -1,0 +1,495 @@
+/* ---------- Design tokens (light by default, dark via system preference) ---------- */
+:root {
+  color-scheme: light dark;
+
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --surface-alt: #f8f9fb;
+  --row-hover: #eef6f1;
+  --text: #14181f;
+  --muted: #5b6472;
+  --border: #e2e5ea;
+  --accent: #0b7a4b;
+  --accent-hover: #09663f;
+  --accent-text: #ffffff;
+  --accent-soft: #e3f3ea;
+  --win: #1d8a4c;
+  --draw: #7c8594;
+  --loss: #c93c3c;
+  --error-bg: #fdecec;
+  --error-border: #f1b5b5;
+  --error-text: #7f1d1d;
+
+  --radius: 12px;
+  --pos-w: 2.75rem;
+
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1115;
+    --surface: #161a20;
+    --surface-alt: #1a1f26;
+    --row-hover: #1d2a24;
+    --text: #e7eaef;
+    --muted: #9aa3b1;
+    --border: #2a3039;
+    --accent: #34c38f;
+    --accent-hover: #4fd6a2;
+    --accent-text: #052417;
+    --accent-soft: #15302a;
+    --win: #2fb36b;
+    --draw: #6b7483;
+    --loss: #e05a5a;
+    --error-bg: #3a1618;
+    --error-border: #6b2a2d;
+    --error-text: #ffd5d5;
+  }
+}
+
+/* ---------- Base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+[hidden] {
+  display: none !important; /* author `img { display: block }` would otherwise beat the UA rule */
+}
+
+img {
+  display: block;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+a {
+  color: var(--accent);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Layout ---------- */
+.page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 2rem 16px 3rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  letter-spacing: -0.02em;
+}
+
+.page-header p {
+  margin: 0.25rem 0 1.5rem;
+}
+
+.page-footer {
+  margin-top: 2rem;
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+/* ---------- League picker ---------- */
+.league-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.league-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.league-btn:hover {
+  border-color: var(--accent);
+}
+
+.league-btn[aria-pressed="true"] {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+/* ---------- Toolbar ---------- */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin: 1.25rem 0 1rem;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: 11rem;
+  padding: 0.65rem 1.25rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--accent-text);
+  background: var(--accent);
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.btn-primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.btn-primary[aria-busy="true"] {
+  opacity: 0.85;
+  cursor: progress;
+}
+
+.status {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.05rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+
+.badge-live {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-color: transparent;
+}
+
+/* ---------- Spinner (native <progress>, indeterminate) ---------- */
+progress.spinner {
+  --size: 1em;
+  --thickness: 2px;
+  --duration: 0.8s;
+  appearance: none;
+  width: var(--size);
+  height: var(--size);
+  border: 0;
+  border-radius: 50%;
+  color: inherit;
+  background: conic-gradient(currentColor 0 30%, color-mix(in srgb, currentColor 25%, transparent) 0);
+  mask-image: radial-gradient(
+    farthest-side,
+    transparent calc(100% - var(--thickness)),
+    #000 calc(100% - var(--thickness))
+  );
+  animation: spin var(--duration) linear infinite;
+}
+
+progress.spinner::-webkit-progress-bar,
+progress.spinner::-webkit-progress-value {
+  background: none;
+}
+
+progress.spinner::-moz-progress-bar {
+  background: none;
+}
+
+.spinner-lg {
+  --size: 2.25rem;
+  --thickness: 3px;
+  color: var(--accent);
+}
+
+@keyframes spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  progress.spinner {
+    /* Slower, not stopped, so it still signals activity. */
+    --duration: 3s;
+  }
+}
+
+/* ---------- Banner ---------- */
+.banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+}
+
+.banner-error {
+  color: var(--error-text);
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+}
+
+.banner-close {
+  flex-shrink: 0;
+  padding: 0 0.25rem;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+/* ---------- Empty / loading states ---------- */
+.empty {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.25rem;
+  min-height: 14rem;
+  padding: 2rem 1rem;
+  text-align: center;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+
+.empty p {
+  margin: 0;
+}
+
+.empty-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+/* ---------- Card + table ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0;
+  padding: 1rem;
+  font-size: 1.125rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.season {
+  margin-left: auto;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Scroll container: horizontal scroll on narrow screens, keyboard-scrollable via tabindex. */
+.table-wrap {
+  overflow-x: auto;
+  container-type: inline-size;
+  transition: opacity 0.2s;
+}
+
+.table-wrap:focus-visible {
+  outline-offset: -2px;
+}
+
+.table-wrap[aria-busy="true"] {
+  opacity: 0.55;
+}
+
+.standings {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.standings th,
+.standings td {
+  padding: 0.55rem 0.5rem;
+  text-align: center;
+  white-space: nowrap;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.standings tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.standings thead th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.standings tbody tr:nth-child(even) > * {
+  background: var(--surface-alt);
+}
+
+.standings tbody tr:hover > * {
+  background: var(--row-hover);
+}
+
+abbr[title] {
+  text-decoration: none;
+  cursor: help;
+}
+
+/* Pos + Club stay pinned while the numbers scroll sideways. Sticky cells need a background. */
+.col-pos {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 1;
+  /* Exact width (no side padding) so the Club column's sticky offset below lines up with it. */
+  width: var(--pos-w);
+  min-width: var(--pos-w);
+  max-width: var(--pos-w);
+  padding-inline: 0 !important;
+  color: var(--muted);
+}
+
+.standings .col-club {
+  position: sticky;
+  inset-inline-start: var(--pos-w);
+  z-index: 1;
+  text-align: start;
+  box-shadow: inset -1px 0 0 var(--border);
+}
+
+.club {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.club-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 14rem;
+}
+
+.crest-placeholder {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+.col-pts {
+  font-weight: 700;
+}
+
+.col-form {
+  text-align: start;
+}
+
+.form {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.form-pill {
+  display: inline-grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #fff;
+  border-radius: 4px;
+  background: var(--draw);
+}
+
+.form-W {
+  background: var(--win);
+}
+
+.form-L {
+  background: var(--loss);
+}
+
+/* Narrow table container (phones, or a narrow layout slot). */
+@container (width < 640px) {
+  .standings {
+    --pos-w: 2.25rem;
+    font-size: 0.875rem;
+  }
+
+  .standings th,
+  .standings td {
+    padding: 0.5rem 0.4rem;
+  }
+
+  .club-name {
+    max-width: 8.5rem;
+  }
+}
