@@ -179,8 +179,7 @@ The UI shows the red banner and keeps the last table on screen.
 
 ```mermaid
 flowchart LR
-    push["git push to main"] --> gh["GitHub<br/>theonlydisappointment/football-poc"]
-    gh -- "Vercel Git integration" --> build
+    push["git push to main<br/>GitHub: theonlydisappointment/football-poc"]
 
     subgraph build["Vercel build (iad1)"]
         direction TB
@@ -190,8 +189,10 @@ flowchart LR
         a --> mig
     end
 
-    build --> out["Deploy outputs<br/>static assets + Python function"]
-    out --> alias["Assign production domains<br/>football-poc.vercel.app"]
+    live["Deploy static assets + Python function<br/>assign football-poc.vercel.app"]
+
+    push -- "Vercel Git integration" --> build
+    build --> live
 ```
 
 1. **Trigger.** A push to `main` creates a **Production** deployment. Pushes to other branches and
