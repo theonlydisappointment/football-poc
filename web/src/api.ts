@@ -32,7 +32,8 @@ export interface StandingsResponse {
   rows: StandingRow[];
 }
 
-export const API_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/+$/, "");
+// Empty = same origin (Vercel serves the API under /api). Docker Compose sets http://localhost:8000.
+export const API_URL = (import.meta.env.VITE_API_URL ?? "").replace(/\/+$/, "");
 
 export class ApiError extends Error {
   readonly status: number;
@@ -57,7 +58,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     response = await fetch(`${API_URL}${path}`, init);
   } catch (err) {
     if (isAbortError(err)) throw err;
-    throw new ApiError(`Can't reach the API at ${API_URL}. Is it running?`, 0);
+    throw new ApiError(`Can't reach the API at ${API_URL || window.location.origin}. Is it running?`, 0);
   }
 
   const body = await response.json().catch(() => null);

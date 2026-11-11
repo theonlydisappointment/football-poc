@@ -89,4 +89,22 @@ docker compose down -v
 cd web && npm install && npm run dev
 ```
 
-The API still needs to be running (`docker compose up db api`).
+The API still needs to be running (`docker compose up db api`). With no `VITE_API_URL` set, the
+Vite dev server forwards `/api` and `/health` to `localhost:8000`.
+
+## Deploy to Vercel
+
+`vercel.json` deploys both halves as one Vercel project using **Services**:
+- `web` builds the Vite app and serves `/`.
+- `api` runs FastAPI and handles `/api/*` and `/health`.
+
+They share a domain, so no CORS setup is needed. Each build runs `alembic upgrade head`
+(`[tool.vercel.scripts]` in `api/pyproject.toml`), so the hosted database is migrated before the
+new code goes live.
+
+One-time setup in the Vercel project:
+1. **Storage → Create Database → Neon (Postgres)**, connected to the project for all
+   environments. This adds `DATABASE_URL` and `DATABASE_URL_UNPOOLED`. The API prefers the
+   unpooled URL, and converts `postgres://…?sslmode=require` URLs for asyncpg itself.
+2. **Settings → Environment Variables:** add `FOOTBALL_DATA_API_KEY` and mark it Sensitive.
+3. Deploy. Pushes to `main` deploy to production from then on.

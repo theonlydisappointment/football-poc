@@ -2,7 +2,25 @@
 name = "football-poc-api"
 version = "0.1.0"
 requires-python = ">=3.12"
-# Runtime deps are pinned in requirements.txt, test deps in requirements-dev.txt.
+# Runtime deps. Vercel installs from here; the Docker image uses requirements.txt.
+# tests/test_config.py fails if the two lists drift apart.
+dependencies = [
+    "fastapi==0.162.0",
+    "uvicorn==0.54.0",
+    "sqlalchemy[asyncio]==2.1.6",
+    "asyncpg==0.32.0",
+    "alembic==1.20.1",
+    "httpx==0.28.1",
+    "pydantic==2.14.2",
+    "pydantic-settings==2.16.2",
+]
+
+[tool.vercel]
+entrypoint = "app.main:app"
+
+[tool.vercel.scripts]
+# Runs on every Vercel build, after deps install and before the new code goes live.
+build = "alembic upgrade head"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
