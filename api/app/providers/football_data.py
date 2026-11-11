@@ -21,6 +21,9 @@ class FootballDataProvider(StandingsProvider):
         timeout: float = 10.0,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
+        # Keys pasted into dashboards often carry a trailing newline or space, which makes the
+        # header invalid (httpx raises LocalProtocolError before sending anything).
+        api_key = api_key.strip()
         self._has_key = bool(api_key)
         self._client = httpx.AsyncClient(
             base_url=base_url,
@@ -38,6 +41,11 @@ class FootballDataProvider(StandingsProvider):
             response = await self._client.get(f"/competitions/{code}/standings")
         except httpx.TimeoutException:
             raise ProviderError(f"{self.name} timed out") from None
+        except httpx.LocalProtocolError:
+            raise ProviderError(
+                f"Could not build the request to {self.name}: "
+                "check FOOTBALL_DATA_API_KEY for stray characters"
+            ) from None
         except httpx.HTTPError as exc:
             raise ProviderError(f"Could not reach {self.name} ({type(exc).__name__})") from None
 

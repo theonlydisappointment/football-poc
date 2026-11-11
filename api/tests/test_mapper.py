@@ -124,6 +124,27 @@ async def test_timeout_becomes_provider_error():
         await provider_with(handler).fetch_standings("PL")
 
 
+@pytest.mark.parametrize("raw_key", ["test-key\n", " test-key", "test-key \r\n"])
+async def test_whitespace_around_key_is_stripped(raw_key):
+    seen = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["token"] = request.headers.get("X-Auth-Token")
+        return httpx.Response(200, json=FIXTURE)
+
+    provider = FootballDataProvider(api_key=raw_key, transport=httpx.MockTransport(handler))
+    await provider.fetch_standings("PL")
+    assert seen["token"] == "test-key"
+
+
+async def test_invalid_header_points_at_the_key():
+    def handler(request):
+        raise httpx.LocalProtocolError("Illegal header value")
+
+    with pytest.raises(ProviderError, match="FOOTBALL_DATA_API_KEY"):
+        await provider_with(handler).fetch_standings("PL")
+
+
 async def test_missing_key_fails_without_calling_the_api():
     calls = []
     provider = FootballDataProvider(
