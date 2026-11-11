@@ -11,6 +11,7 @@ React (Vite)  ──►  FastAPI  ──►  football-data.org v4
 ```
 
 How it works, file by file: [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md).
+Architecture, resources and deployment (with diagrams): [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Quickstart
 
